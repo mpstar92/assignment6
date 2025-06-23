@@ -1,0 +1,27 @@
+configfile: "config/config.yaml"
+import os
+import glob
+import pandas as pd
+from snakemake.utils import min_version
+min_version("7.0")
+
+wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/master/bio"
+
+# Samples
+samples = pd.read_csv(config["samples"], sep="\t", index_col="sample")
+SAMPLES = samples.index.tolist()
+
+include: "rules/get_data.smk"
+include: "rules/qc.smk"
+include: "rules/star.smk"
+include: "rules/statistics.smk"
+
+rule all:
+    input:
+        "results/multiqc/multiqc_report.html",
+        "data/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
+        "data/genome/Homo_sapiens.GRCh38.111.gtf",
+        expand("results/counts/{sample}.featureCounts.txt", sample=SAMPLES),
+        # or for htseq:
+        # expand("results/counts/{sample}.htseq.txt", sample=SAMPLES)
+        

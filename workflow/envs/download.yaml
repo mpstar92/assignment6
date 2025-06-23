@@ -1,0 +1,7 @@
+# envs/download.yaml
+name: download
+channels:
+  - conda-forge
+dependencies:
+  - wget
+  - gzip
