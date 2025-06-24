@@ -1,0 +1,10 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - trinity=2.15.1
+  - samtools
+  - bowtie2
+  - jellyfish
+  - salmon
+  - perl

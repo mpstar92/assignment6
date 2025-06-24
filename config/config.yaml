@@ -2,6 +2,13 @@
 samples: "config/samples.tsv"
 fastp:
   extra: "--detect_adapter_for_pe"
+
 genome:
   fasta: "https://ftp.ensembl.org/pub/release-111/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz"
   gtf: "https://ftp.ensembl.org/pub/release-111/gtf/homo_sapiens/Homo_sapiens.GRCh38.111.gtf.gz"
+
+
+transcriptome:
+  fasta: "https://ftp.ensembl.org/pub/release-111/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz"
+
+quant_mode: "kallisto_only" # options: de_novo, kallisto_only, rsem_only

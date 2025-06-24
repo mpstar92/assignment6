@@ -11,17 +11,51 @@ wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/master/bio
 samples = pd.read_csv(config["samples"], sep="\t", index_col="sample")
 SAMPLES = samples.index.tolist()
 
+if config["quant_mode"] == "kallisto_only":
+    include: "rules/kallisto_only.smk"
+
+elif config["quant_mode"] == "de_novo":
+    include: "rules/merge.smk"
+    include: "rules/trinity.smk"
+    include: "rules/kallisto.smk"
+    include: "rules/rsem.smk"
+
+elif config["quant_mode"] == "rsem_only":
+    include: "rules/rsem_only.smk"
+
+
 include: "rules/get_data.smk"
 include: "rules/qc.smk"
 include: "rules/star.smk"
 include: "rules/statistics.smk"
 
-rule all:
-    input:
-        "results/multiqc/multiqc_report.html",
+
+BASE_OUTPUT = [
+    "results/multiqc/multiqc_report.html"
+]
+
+if config["quant_mode"] == "kallisto_only":
+    FINAL_OUTPUT = BASE_OUTPUT + expand("results/kallisto/{sample}/abundance.tsv", sample=SAMPLES)
+
+elif config["quant_mode"] == "rsem_only":
+    FINAL_OUTPUT = BASE_OUTPUT + [
+        "results/rsem/index/transcripts.grp"
+    ] + expand("results/rsem/{sample}.genes.results", sample=SAMPLES) \
+      + expand("results/rsem/{sample}.isoforms.results", sample=SAMPLES)
+
+elif config["quant_mode"] == "de_novo":
+    FINAL_OUTPUT = BASE_OUTPUT + [
+        "results/trinity/Trinity.fasta",
+        "results/kallisto_trinity/quant/abundance.tsv",
+        "results/rsem_trinity/quant.genes.results",
+        "results/rsem_trinity/quant.isoforms.results"
+    ]
+
+else:  # default: Part A — reference-based workflow
+    FINAL_OUTPUT = BASE_OUTPUT + [
         "data/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
         "data/genome/Homo_sapiens.GRCh38.111.gtf",
-        expand("results/counts/{sample}.featureCounts.txt", sample=SAMPLES),
-        # or for htseq:
-        # expand("results/counts/{sample}.htseq.txt", sample=SAMPLES)
-        
+    ] + expand("results/counts/{sample}.featureCounts.txt", sample=SAMPLES)
+
+rule all:
+    input: FINAL_OUTPUT
