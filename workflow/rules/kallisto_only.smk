@@ -18,7 +18,7 @@ rule kallisto_quant:
         r1 = "results/trimmed/{sample}_R1.fastq.gz",
         r2 = "results/trimmed/{sample}_R2.fastq.gz"
     output:
-        directory("results/kallisto/{sample}/")
+        abundance = "results/kallisto/{sample}/abundance.tsv"
     log:
         "logs/kallisto/{sample}.log"
     threads: 8
@@ -28,7 +28,7 @@ rule kallisto_quant:
         """
         kallisto quant \
             -i {input.index} \
-            -o {output} \
+            -o results/kallisto/{wildcards.sample}/ \
             -b 100 \
             -t {threads} \
             {input.r1} {input.r2} &> {log}

@@ -3,7 +3,7 @@ rule rsem_prepare_reference:
     input:
         "resources/kallisto_transcripts.fasta"
     output:
-        directory("results/rsem/index")
+        ref = "results/rsem/index/transcripts.grp"
     threads: 4
     conda:
         "../envs/rsem.yaml"
@@ -18,7 +18,7 @@ rule rsem_calculate_expression:
     input:
         r1 = "results/trimmed/{sample}_R1.fastq.gz",
         r2 = "results/trimmed/{sample}_R2.fastq.gz",
-        ref = "results/rsem/index/transcripts"
+        ref = "results/rsem/index/transcripts.grp"
     output:
         gene = "results/rsem/{sample}.genes.results",
         isoform = "results/rsem/{sample}.isoforms.results"
@@ -32,6 +32,6 @@ rule rsem_calculate_expression:
         rsem-calculate-expression \
             --bowtie2 \
             --paired-end {input.r1} {input.r2} \
-            {input.ref} results/rsem/{wildcards.sample} \
+            results/rsem/index/transcripts results/rsem/{wildcards.sample} \
             --num-threads {threads} &> {log}
         """

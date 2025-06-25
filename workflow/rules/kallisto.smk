@@ -19,8 +19,8 @@ rule kallisto_quant_trinity:
         r1 = "results/merged/all_R1.fastq.gz",
         r2 = "results/merged/all_R2.fastq.gz"
     output:
-        directory("results/kallisto_trinity/quant")
-    threads: 8
+        "results/kallisto_trinity/quant/abundance.tsv"
+    threads: 20
     log:
         "logs/kallisto_trinity/quant.log"
     conda:

@@ -4,7 +4,7 @@ rule trinity_assembly:
         r2 = "results/merged/all_R2.fastq.gz"
     output:
         "results/trinity/Trinity.fasta"
-    threads: 8
+    threads: 32
     conda:
         "../envs/trinity.yaml"
     shell:

@@ -1,4 +1,3 @@
-# rules/qc.smk
 
 rule fastqc_raw:
     input:
@@ -8,7 +7,7 @@ rule fastqc_raw:
         zip = temp("results/fastqc_raw/{sample}_{idx}_fastqc.zip")
     log:
         "logs/fastqc_raw/{sample}_{idx}.log"
-    threads: 8
+    threads: 2
     conda:
         "../envs/qc.yaml"
     wrapper:
@@ -25,7 +24,7 @@ rule fastp:
         json = "results/qc/fastp/{sample}.json"
     log:
         "logs/fastp/{sample}.log"
-    threads: 8
+    threads: 4
     conda:
         "../envs/qc.yaml"
     shell:
@@ -42,12 +41,11 @@ rule fastqc_trimmed:
         zip = temp("results/fastqc_trimmed/{sample}_{idx}_fastqc.zip")
     log:
         "logs/fastqc_trimmed/{sample}_{idx}.log"
-    threads: 8
+    threads: 2
     conda:
         "../envs/qc.yaml"
     wrapper:
         "v6.2.0/bio/fastqc"
-
 
 rule multiqc:
     input:

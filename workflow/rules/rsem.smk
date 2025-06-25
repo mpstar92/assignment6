@@ -2,10 +2,10 @@ rule rsem_prepare_reference_trinity:
     input:
         "results/trinity/Trinity.fasta"
     output:
-        directory("results/rsem_trinity/index")
-    threads: 4
+        "results/rsem_trinity/index/Trinity.grp"
     log:
         "logs/rsem_trinity/index.log"
+    threads: 4
     conda:
         "../envs/rsem.yaml"
     shell:
@@ -19,7 +19,7 @@ rule rsem_quant_trinity:
     input:
         r1 = "results/merged/all_R1.fastq.gz",
         r2 = "results/merged/all_R2.fastq.gz",
-        ref = "results/rsem_trinity/index/Trinity"
+        ref = "results/rsem_trinity/index/Trinity.grp"
     output:
         gene = "results/rsem_trinity/quant.genes.results",
         isoform = "results/rsem_trinity/quant.isoforms.results"
