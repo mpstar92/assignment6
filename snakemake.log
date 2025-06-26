@@ -1,0 +1,48 @@
+nohup: Eingabe wird ignoriert
+Assuming unrestricted shared filesystem usage.
+host: compute02
+Building DAG of jobs...
+Your conda installation is not configured to use strict channel priorities. This is however important for having robust and correct environments (for details, see https://conda-forge.org/docs/user/tipsandtricks.html). Please consider to configure strict priorities by executing 'conda config --set channel_priority strict'.
+Using shell: /usr/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                       count
+----------------------  -------
+all                           1
+kallisto_quant_trinity        1
+total                         2
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Jun 26 08:52:24 2025]
+localrule kallisto_quant_trinity:
+    input: results/kallisto_trinity/index/Trinity.idx, results/merged/all_R1.fastq.gz, results/merged/all_R2.fastq.gz
+    output: results/kallisto_trinity/quant/abundance.tsv
+    log: logs/kallisto_trinity/quant.log
+    jobid: 34
+    reason: Missing output files: results/kallisto_trinity/quant/abundance.tsv
+    threads: 8
+    resources: tmpdir=/tmp
+
+Activating conda environment: .snakemake/conda/8c64afda6881b10c0c353de70d7e7084_
+[Thu Jun 26 08:52:42 2025]
+Finished jobid: 34 (Rule: kallisto_quant_trinity)
+1 of 2 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Jun 26 08:52:42 2025]
+localrule all:
+    input: results/multiqc/multiqc_report.html, results/merged/all_R1.fastq.gz, results/merged/all_R2.fastq.gz, results/trinity.Trinity.fasta, results/kallisto_trinity/quant/abundance.tsv, results/rsem_trinity/quant.genes.results, results/rsem_trinity/quant.isoforms.results
+    jobid: 0
+    reason: Input files updated by another job: results/kallisto_trinity/quant/abundance.tsv
+    resources: tmpdir=/tmp
+
+[Thu Jun 26 08:52:42 2025]
+Finished jobid: 0 (Rule: all)
+2 of 2 steps (100%) done
+Complete log(s): /storage/mi/mpstar/assignment6/.snakemake/log/2025-06-26T085221.417799.snakemake.log
+SAMPLES = ['sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6']
+quant_mode = de_novo
