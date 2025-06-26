@@ -1,0 +1,17 @@
+# Large data files
+data/*.fastq.gz
+data/*.fa
+data/*.fa.gz
+data/*.gtf
+data/*.gtf.gz
+data/practical.tar
+data/genome/
+
+# Results and logs
+results/
+logs/
+.snakemake/
+
+# Temporary files
+*.tmp
+*.temp

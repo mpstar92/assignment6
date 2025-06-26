@@ -1,0 +1,69 @@
+configfile: "config/config.yaml"
+import os
+import glob
+import pandas as pd
+from snakemake.utils import min_version
+min_version("7.0")
+
+wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/master/bio"
+
+# Samples
+samples = pd.read_csv(config["samples"], sep="\t", index_col="sample")
+SAMPLES = samples.index.tolist()
+
+include: "rules/get_data.smk"
+include: "rules/qc.smk"
+
+BASE_OUTPUT = [
+    "results/multiqc/multiqc_report.html"
+]
+
+# Conditional rules and outputs based on quant_mode
+quant_mode = config.get("quant_mode", "reference")  # fallback to reference
+
+
+print("quant_mode =", quant_mode)
+
+# Choose final output depending on quant_mode
+if quant_mode == "reference":
+    include: "rules/star.smk"
+    include: "rules/statistics.smk"
+    FINAL_OUTPUT = BASE_OUTPUT + [
+        "data/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
+        "data/genome/Homo_sapiens.GRCh38.111.gtf"
+    ] + expand("results/counts/{sample}.featureCounts.txt", sample=SAMPLES)
+
+elif quant_mode == "kallisto_only":
+    include: "rules/kallisto_only.smk"
+    # 👇 define this as a separate list
+    kallisto_outputs = expand("results/kallisto/{sample}/abundance.tsv", sample=SAMPLES)
+    FINAL_OUTPUT = BASE_OUTPUT + kallisto_outputs
+
+elif quant_mode == "rsem_only":
+    include: "rules/rsem_only.smk"
+    rsem_outputs = (
+        ["results/rsem/index/transcripts.grp"]
+        + expand("results/rsem/{sample}.genes.results", sample=SAMPLES)
+        + expand("results/rsem/{sample}.isoforms.results", sample=SAMPLES)
+    )
+    FINAL_OUTPUT = BASE_OUTPUT + rsem_outputs
+
+elif quant_mode == "de_novo":
+    include: "rules/merge.smk"
+    include: "rules/trinity.smk"
+    include: "rules/kallisto.smk"
+    include: "rules/rsem.smk"
+    FINAL_OUTPUT = BASE_OUTPUT + [
+        "results/merged/all_R1.fastq.gz",
+        "results/merged/all_R2.fastq.gz",
+        "results/trinity.Trinity.fasta",  # <-- changed here
+        "results/kallisto_trinity/quant/abundance.tsv",
+        "results/rsem_trinity/quant.genes.results",
+        "results/rsem_trinity/quant.isoforms.results"
+    ]
+else:
+    raise ValueError(f"Invalid 'quant_mode': {quant_mode}. Expected: reference, kallisto_only, rsem_only, de_novo")
+
+rule all:
+    input: 
+        FINAL_OUTPUT
